@@ -1,0 +1,76 @@
+#!/usr/bin/python3
+
+import sys
+import argparse
+from math import sqrt
+
+
+def check_unsigned(a):
+    value = int(a)
+    if value < 0:
+        raise argparse.ArgumentTypeError("%r must be positive"%(value,))
+    return value
+
+
+if len(sys.argv) == 5:
+    parser = argparse.ArgumentParser(description='206neutrinos')
+    parser.add_argument('n', type=check_unsigned)
+    parser.add_argument('a', type=check_unsigned)
+    parser.add_argument('h', type=check_unsigned)
+    parser.add_argument('sd', type=check_unsigned)
+
+
+try:
+    args = parser.parse_args()
+except:
+    exit(84)
+
+
+def calc_arithmetic_mean(tab, line):
+    res = ((tab[2] * (tab[0])) + line) / (tab[0] + 1)
+    return res
+
+
+def calc_harmonic_mean(tab, line):
+    res = (tab[0] + 1) / ((tab[0]) / tab[4] + 1 / line)
+    return res
+
+
+def calc_standard_deviation(tab, line):
+    res = sqrt((tab[0] / (tab[0] + 1)) * (pow(tab[1], 2) + (pow(line - tab[2], 2) / (tab[0] + 1))))
+    return res
+
+
+def calc_root_mean_square(tab, line):
+    exisquare = (tab[0]) * (pow(tab[1], 2) + pow(tab[2], 2))
+    rms = sqrt((exisquare + pow(line, 2)) / (tab[0] + 1))
+    return rms
+
+
+def calc_values(tab, line):
+    tab = [tab[0] + 1, calc_standard_deviation(tab, line), calc_arithmetic_mean(tab, line), calc_root_mean_square(tab, line), calc_harmonic_mean(tab, line)]
+    return tab
+
+
+def print_func(tab):
+    print("\tNumber of values: {:d}".format(tab[0]))
+    print("\tStandard deviation: {:.2f}".format(tab[1]))
+    print("\tArithmetic mean: {:.2f}".format(tab[2]))
+    print("\tRoot mean square: {:.2f}".format(tab[3]))
+    print("\tHarmonic mean: {:.2f}\n".format(tab[4]))
+
+
+tab = [args.n, args.sd, args.a, 0, args.h]
+while True:
+    while True:
+        print("Enter next value: ", end='', flush=True)
+        line = sys.stdin.readline().rstrip()
+        if line == "END":
+            exit(0)
+        if line is not None:
+            break
+    try:
+        tab = calc_values(tab, int(line))
+    except:
+        exit(84)
+    print_func(tab)
